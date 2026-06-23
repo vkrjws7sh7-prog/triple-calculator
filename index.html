@@ -16,6 +16,7 @@ margin:0;
 padding:10px;
 }
 
+
 .mode{
 display:flex;
 gap:8px;
@@ -39,12 +40,11 @@ flex:0 0 68%;
 
 .column{
 background:white;
-width:100px;
-min-width:100px;
-max-width:100px;
+flex:1;
 border-radius:10px;
 padding:5px;
 overflow:hidden;
+min-width:0;
 }
 
 
@@ -57,9 +57,10 @@ margin:5px;
 .row{
 height:45px;
 border-bottom:1px solid #ccc;
-font-size:24px;
+font-size:clamp(14px,3vw,24px);
 overflow:hidden;
 white-space:nowrap;
+text-align:right;
 }
 
 
@@ -77,7 +78,7 @@ margin:8px;
 
 
 button{
-font-size:26px;
+font-size:24px;
 border-radius:10px;
 border:none;
 background:white;
@@ -101,7 +102,6 @@ gap:8px;
 <body>
 
 
-
 <div class="mode">
 
 <button onclick="mode='single'">
@@ -118,7 +118,6 @@ gap:8px;
 
 
 
-
 <div class="main">
 
 
@@ -126,14 +125,12 @@ gap:8px;
 <div class="columns">
 
 
-
 <div class="column">
 <h3>A</h3>
 <div id="col0"></div>
 <div class="total" id="total0">0</div>
-<button onclick="clearCol(0)">C</button>
+<button onclick="clearCol(0)">AC</button>
 </div>
-
 
 
 
@@ -141,9 +138,8 @@ gap:8px;
 <h3>B</h3>
 <div id="col1"></div>
 <div class="total" id="total1">0</div>
-<button onclick="clearCol(1)">C</button>
+<button onclick="clearCol(1)">AC</button>
 </div>
-
 
 
 
@@ -151,7 +147,7 @@ gap:8px;
 <h3>C</h3>
 <div id="col2"></div>
 <div class="total" id="total2">0</div>
-<button onclick="clearCol(2)">C</button>
+<button onclick="clearCol(2)">AC</button>
 </div>
 
 
@@ -193,11 +189,11 @@ gap:8px;
 <button onclick="input('÷')">÷</button>
 
 
+<button onclick="clearCol(activeCol)">C</button>
 <button onclick="clearAll()">3AC</button>
 
 
 </div>
-
 
 
 </div>
@@ -226,7 +222,6 @@ let mode="single";
 
 
 
-
 function formatNumber(value){
 
 
@@ -238,10 +233,10 @@ return value;
 }
 
 
-let minus="";
-
-
 let str=value.toString();
+
+
+let minus="";
 
 
 if(str.startsWith("-")){
@@ -252,14 +247,13 @@ str=str.slice(1);
 }
 
 
-if(!/^\d+$/.test(str)){
-return value;
-}
+if(!/^\d+$/.test(str)) return value;
 
 
 return minus + Number(str).toLocaleString();
 
 }
+
 
 
 
@@ -284,6 +278,7 @@ let val=data[c][r];
 html+=`
 
 <div class="row ${activeCol==c&&activeRow==r?'active':''}"
+
 onclick="selectCell(${c},${r})">
 
 <span style="color:${String(val).startsWith('-')?'red':'black'}">
@@ -297,6 +292,7 @@ ${formatNumber(val)}
 `;
 
 }
+
 
 
 document.getElementById("col"+c).innerHTML=html;
@@ -329,7 +325,6 @@ let v=data[c][r];
 if(!v) continue;
 
 
-
 try{
 
 
@@ -358,10 +353,11 @@ return result;
 
 
 
+
+
 function selectCell(c,r){
 
 activeCol=c;
-
 activeRow=r;
 
 draw();
@@ -373,7 +369,6 @@ draw();
 
 
 function input(v){
-
 
 
 if(mode=="all"){
@@ -390,7 +385,6 @@ data[c][activeRow]+=v;
 
 
 data[activeCol][activeRow]+=v;
-
 
 }
 
@@ -441,14 +435,17 @@ Function("return "+v)()
 
 
 if(activeRow<9){
+
 activeRow++;
+
 }
 
 
 draw();
 
-
 }
+
+
 
 
 
@@ -468,6 +465,8 @@ draw();
 
 
 
+
+
 function clearAll(){
 
 data=[
@@ -476,11 +475,13 @@ Array(10).fill(""),
 Array(10).fill("")
 ];
 
+
 activeRow=0;
 
 draw();
 
 }
+
 
 
 
