@@ -15,18 +15,23 @@ margin:0;
 padding:10px;
 }
 
-h2{text-align:center;}
+h2{
+text-align:center;
+}
 
 .main{
 display:flex;
 gap:8px;
+height:85vh;
 }
+
 
 .columns{
 display:flex;
-gap:5px;
-flex:1;
+gap:4px;
+flex:0 0 68%;
 }
+
 
 .column{
 background:white;
@@ -35,43 +40,63 @@ border-radius:10px;
 padding:5px;
 }
 
-.row{
-height:35px;
-border-bottom:1px solid #ccc;
-font-size:18px;
+
+h3{
+text-align:center;
+margin:5px;
 }
+
+
+.row{
+height:45px;
+border-bottom:1px solid #ccc;
+font-size:28px;
+overflow:hidden;
+}
+
 
 .row.active{
 background:#ddd;
 }
 
+
 .total{
-font-size:22px;
+font-size:28px;
 font-weight:bold;
 text-align:center;
 margin:8px;
 }
 
 
+
 .keypad{
-width:130px;
+
+flex:1;
 display:grid;
 grid-template-columns:repeat(3,1fr);
-gap:5px;
+gap:8px;
+
 }
 
+
 button{
-font-size:22px;
-border-radius:8px;
+
+font-size:28px;
+border-radius:10px;
 border:none;
-padding:12px 5px;
+background:white;
+
 }
+
 
 
 .mode{
-margin:10px;
+
 text-align:center;
+margin:8px;
+
 }
+
 
 </style>
 
@@ -79,6 +104,7 @@ text-align:center;
 
 
 <body>
+
 
 <h2>比較電卓</h2>
 
@@ -166,26 +192,34 @@ AC
 
 <div class="keypad">
 
+
 <button onclick="input('7')">7</button>
 <button onclick="input('8')">8</button>
 <button onclick="input('9')">9</button>
+
 
 <button onclick="input('4')">4</button>
 <button onclick="input('5')">5</button>
 <button onclick="input('6')">6</button>
 
+
 <button onclick="input('1')">1</button>
 <button onclick="input('2')">2</button>
 <button onclick="input('3')">3</button>
 
+
 <button onclick="input('0')">0</button>
 <button onclick="input('00')">00</button>
-<button onclick="calc()">=</button>
+<button onclick="calc()">＝</button>
 
-<button onclick="input('+')">+</button>
-<button onclick="input('-')">-</button>
-<button onclick="input('*')">*</button>
-<button onclick="input('/')">/</button>
+
+<button onclick="input('+')">＋</button>
+<button onclick="input('-')">−</button>
+<button onclick="input('*')">×</button>
+
+
+<button onclick="input('/')">÷</button>
+
 
 </div>
 
@@ -239,15 +273,15 @@ ${data[c][r]}
 }
 
 
-document.getElementById(
-"col"+c
-).innerHTML=html;
+document.getElementById("col"+c).innerHTML=html;
+
 
 
 let sum=0;
 
 
 for(let v of data[c]){
+
 
 try{
 
@@ -256,17 +290,19 @@ sum+=Function("return "+v)();
 
 }catch{}
 
-}
-
-
-document.getElementById(
-"total"+c
-).innerHTML=sum;
-
 
 }
 
+
+document.getElementById("total"+c).innerHTML=sum;
+
+
 }
+
+
+}
+
+
 
 
 
@@ -282,10 +318,12 @@ draw();
 
 
 
+
 function input(v){
 
 
 if(mode=="all"){
+
 
 for(let c=0;c<3;c++){
 
@@ -305,6 +343,7 @@ data[activeCol][activeRow]+=v;
 
 draw();
 
+
 }
 
 
@@ -316,16 +355,20 @@ function calc(){
 
 for(let c=0;c<3;c++){
 
+
 for(let r=0;r<10;r++){
 
 
 try{
 
+
 if(data[c][r]){
+
 
 data[c][r]=
 Function("return "+data[c][r])()
 .toString();
+
 
 }
 
@@ -333,12 +376,15 @@ Function("return "+data[c][r])()
 }catch{}
 
 
+
 }
+
 
 }
 
 
 draw();
+
 
 }
 
