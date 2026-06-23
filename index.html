@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3連電卓</title>
+
+<style>
+body {
+  font-family: sans-serif;
+  text-align: center;
+  background: #f5f5f5;
+}
+
+.container {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  padding: 20px;
+}
+
+.calc {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  width: 30%;
+}
+
+input {
+  width: 100%;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+button {
+  width: 45%;
+  margin: 3px;
+  font-size: 18px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>3連電卓</h1>
+
+<div class="container">
+
+<div class="calc">
+<input id="a">
+<button onclick="add('a','1')">1</button>
+<button onclick="add('a','2')">2</button>
+<button onclick="add('a','3')">3</button>
+<button onclick="clearC('a')">C</button>
+</div>
+
+
+<div class="calc">
+<input id="b">
+<button onclick="add('b','1')">1</button>
+<button onclick="add('b','2')">2</button>
+<button onclick="add('b','3')">3</button>
+<button onclick="clearC('b')">C</button>
+</div>
+
+
+<div class="calc">
+<input id="c">
+<button onclick="add('c','1')">1</button>
+<button onclick="add('c','2')">2</button>
+<button onclick="add('c','3')">3</button>
+<button onclick="clearC('c')">C</button>
+</div>
+
+</div>
+
+
+<script>
+
+function add(id,num){
+ document.getElementById(id).value += num;
+}
+
+function clearC(id){
+ document.getElementById(id).value="";
+}
+
+</script>
+
+
+</body>
+</html>
