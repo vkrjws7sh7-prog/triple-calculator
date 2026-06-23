@@ -16,16 +16,10 @@ margin:0;
 padding:10px;
 }
 
-
 .mode{
 display:flex;
-gap:10px;
-margin-bottom:10px;
-}
-
-
-.mode button{
-font-size:20px;
+gap:8px;
+margin-bottom:8px;
 }
 
 
@@ -45,9 +39,12 @@ flex:0 0 68%;
 
 .column{
 background:white;
-flex:1;
+width:100px;
+min-width:100px;
+max-width:100px;
 border-radius:10px;
 padding:5px;
+overflow:hidden;
 }
 
 
@@ -60,8 +57,9 @@ margin:5px;
 .row{
 height:45px;
 border-bottom:1px solid #ccc;
-font-size:28px;
+font-size:24px;
 overflow:hidden;
+white-space:nowrap;
 }
 
 
@@ -71,7 +69,7 @@ background:#ddd;
 
 
 .total{
-font-size:28px;
+font-size:26px;
 font-weight:bold;
 text-align:center;
 margin:8px;
@@ -95,11 +93,6 @@ gap:8px;
 }
 
 
-.allclear{
-margin-top:8px;
-}
-
-
 </style>
 
 </head>
@@ -115,12 +108,12 @@ margin-top:8px;
 個別
 </button>
 
-
 <button onclick="mode='all'">
 一括
 </button>
 
 </div>
+
 
 
 
@@ -135,45 +128,30 @@ margin-top:8px;
 
 
 <div class="column">
-
 <h3>A</h3>
-
 <div id="col0"></div>
-
 <div class="total" id="total0">0</div>
-
 <button onclick="clearCol(0)">C</button>
-
 </div>
 
 
 
 
 <div class="column">
-
 <h3>B</h3>
-
 <div id="col1"></div>
-
 <div class="total" id="total1">0</div>
-
 <button onclick="clearCol(1)">C</button>
-
 </div>
 
 
 
 
 <div class="column">
-
 <h3>C</h3>
-
 <div id="col2"></div>
-
 <div class="total" id="total2">0</div>
-
 <button onclick="clearCol(2)">C</button>
-
 </div>
 
 
@@ -215,15 +193,15 @@ margin-top:8px;
 <button onclick="input('÷')">÷</button>
 
 
-</div>
+<button onclick="clearAll()">3AC</button>
 
 
 </div>
 
 
-<button class="allclear" onclick="clearAll()">
-全キャンセル
-</button>
+
+</div>
+
 
 
 
@@ -255,29 +233,31 @@ function formatNumber(value){
 if(value==="") return "";
 
 
-let str=value.toString();
-
-
-if(str.includes("÷")) return str;
+if(value.includes("÷")){
+return value;
+}
 
 
 let minus="";
 
 
+let str=value.toString();
+
+
 if(str.startsWith("-")){
 
 minus="-";
-
-str=str.substring(1);
+str=str.slice(1);
 
 }
 
 
-if(!/^\d+$/.test(str)) return value;
+if(!/^\d+$/.test(str)){
+return value;
+}
 
 
 return minus + Number(str).toLocaleString();
-
 
 }
 
@@ -304,7 +284,6 @@ let val=data[c][r];
 html+=`
 
 <div class="row ${activeCol==c&&activeRow==r?'active':''}"
-
 onclick="selectCell(${c},${r})">
 
 <span style="color:${String(val).startsWith('-')?'red':'black'}">
@@ -320,16 +299,11 @@ ${formatNumber(val)}
 }
 
 
-
 document.getElementById("col"+c).innerHTML=html;
 
 
-
-let sum=calcColumn(c);
-
-
-document.getElementById("total"+c).innerHTML=formatNumber(sum);
-
+document.getElementById("total"+c).innerHTML=
+formatNumber(calcColumn(c));
 
 
 }
@@ -363,13 +337,9 @@ if(v.startsWith("÷")){
 
 result=result / Number(v.substring(1));
 
-}
-
-else{
-
+}else{
 
 result+=Function("return "+v)();
-
 
 }
 
@@ -380,13 +350,9 @@ result+=Function("return "+v)();
 }
 
 
-
 return result;
 
-
 }
-
-
 
 
 
@@ -406,8 +372,8 @@ draw();
 
 
 
-
 function input(v){
+
 
 
 if(mode=="all"){
@@ -431,9 +397,7 @@ data[activeCol][activeRow]+=v;
 
 draw();
 
-
 }
-
 
 
 
@@ -450,28 +414,23 @@ for(let c=0;c<3;c++){
 for(let r=0;r<10;r++){
 
 
-if(data[c][r]){
+let v=data[c][r];
+
+
+if(v && !v.startsWith("÷")){
 
 
 try{
 
 
-if(data[c][r].startsWith("÷")){
-
-continue;
-
-}
-
-
 data[c][r]=
-Function("return "+data[c][r])()
+Function("return "+v)()
 .toString();
 
 
 }catch{}
 
 
-
 }
 
 
@@ -479,13 +438,10 @@ Function("return "+data[c][r])()
 
 
 }
-
 
 
 if(activeRow<9){
-
 activeRow++;
-
 }
 
 
@@ -493,9 +449,6 @@ draw();
 
 
 }
-
-
-
 
 
 
@@ -503,13 +456,11 @@ draw();
 
 function clearCol(c){
 
-
 data[c]=Array(10).fill("");
 
 activeRow=0;
 
 draw();
-
 
 }
 
@@ -519,27 +470,21 @@ draw();
 
 function clearAll(){
 
-
 data=[
 Array(10).fill(""),
 Array(10).fill(""),
 Array(10).fill("")
 ];
 
-
 activeRow=0;
 
-
 draw();
-
 
 }
 
 
 
-
 draw();
-
 
 
 </script>
