@@ -3,88 +3,228 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3連電卓</title>
+
+<title>3連比較電卓</title>
 
 <style>
-body {
-  font-family: sans-serif;
-  text-align: center;
-  background: #f5f5f5;
+
+body{
+  font-family:sans-serif;
+  background:#f3f3f3;
+  margin:0;
+  padding:10px;
 }
 
-.container {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  padding: 20px;
+h2{
+  text-align:center;
 }
 
-.calc {
-  background: white;
-  padding: 15px;
-  border-radius: 10px;
-  width: 30%;
+.container{
+  display:flex;
+  gap:8px;
 }
 
-input {
-  width: 100%;
-  font-size: 20px;
-  margin-bottom: 10px;
+.column{
+  flex:1;
+  background:white;
+  border-radius:12px;
+  padding:8px;
+  min-height:260px;
 }
 
-button {
-  width: 45%;
-  margin: 3px;
-  font-size: 18px;
+.column.active{
+  border:3px solid #333;
 }
+
+.title{
+  font-weight:bold;
+  text-align:center;
+}
+
+.total{
+  font-size:24px;
+  text-align:center;
+  margin:10px;
+}
+
+.history{
+  height:120px;
+  overflow:auto;
+  font-size:18px;
+  word-break:break-all;
+}
+
+.buttons{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:5px;
+  margin-top:15px;
+}
+
+button{
+  font-size:22px;
+  padding:12px 5px;
+  border-radius:8px;
+  border:none;
+}
+
 </style>
 
 </head>
 
+
 <body>
 
-<h1>3連電卓</h1>
+<h2>3連比較電卓</h2>
+
 
 <div class="container">
 
-<div class="calc">
-<input id="a">
-<button onclick="add('a','1')">1</button>
-<button onclick="add('a','2')">2</button>
-<button onclick="add('a','3')">3</button>
-<button onclick="clearC('a')">C</button>
+
+<div class="column active" onclick="selectCol(0)">
+<div class="title">A</div>
+<div class="total" id="total0">0</div>
+<div class="history" id="hist0"></div>
 </div>
 
 
-<div class="calc">
-<input id="b">
-<button onclick="add('b','1')">1</button>
-<button onclick="add('b','2')">2</button>
-<button onclick="add('b','3')">3</button>
-<button onclick="clearC('b')">C</button>
+<div class="column" onclick="selectCol(1)">
+<div class="title">B</div>
+<div class="total" id="total1">0</div>
+<div class="history" id="hist1"></div>
 </div>
 
 
-<div class="calc">
-<input id="c">
-<button onclick="add('c','1')">1</button>
-<button onclick="add('c','2')">2</button>
-<button onclick="add('c','3')">3</button>
-<button onclick="clearC('c')">C</button>
+<div class="column" onclick="selectCol(2)">
+<div class="title">C</div>
+<div class="total" id="total2">0</div>
+<div class="history" id="hist2"></div>
 </div>
+
+
+</div>
+
+
+<div class="buttons">
+
+<button onclick="add('7')">7</button>
+<button onclick="add('8')">8</button>
+<button onclick="add('9')">9</button>
+<button onclick="add('+')">＋</button>
+
+<button onclick="add('4')">4</button>
+<button onclick="add('5')">5</button>
+<button onclick="add('6')">6</button>
+<button onclick="add('-')">−</button>
+
+<button onclick="add('1')">1</button>
+<button onclick="add('2')">2</button>
+<button onclick="add('3')">3</button>
+<button onclick="add('*')">×</button>
+
+<button onclick="add('0')">0</button>
+<button onclick="add('00')">00</button>
+<button onclick="calc()">＝</button>
+<button onclick="add('/')">÷</button>
+
+<button onclick="clearAll()">C</button>
 
 </div>
 
 
 <script>
 
-function add(id,num){
- document.getElementById(id).value += num;
+
+let active=0;
+
+let exp=[
+"",
+"",
+""
+];
+
+
+function selectCol(n){
+
+active=n;
+
+document.querySelectorAll(".column")
+.forEach((e,i)=>{
+e.classList.toggle("active",i===n);
+});
+
 }
 
-function clearC(id){
- document.getElementById(id).value="";
+
+function add(x){
+
+exp[active]+=x;
+
+update();
+
 }
+
+
+function calc(){
+
+try{
+
+let result=Function(
+"return "+exp[active]
+)();
+
+exp[active]=result.toString();
+
+}catch{
+
+alert("計算できません");
+
+}
+
+update();
+
+}
+
+
+
+function clearAll(){
+
+exp[active]="";
+
+update();
+
+}
+
+
+function update(){
+
+for(let i=0;i<3;i++){
+
+document.getElementById(
+"hist"+i
+).innerHTML=exp[i];
+
+
+let value=0;
+
+try{
+
+if(exp[i]){
+value=Function(
+"return "+exp[i]
+)();
+}
+
+}catch{}
+
+document.getElementById(
+"total"+i
+).innerHTML=value;
+
+}
+
+}
+
 
 </script>
 
