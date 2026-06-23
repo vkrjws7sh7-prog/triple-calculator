@@ -1,42 +1,508 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <title>電卓ツール</title>
-    <style>
-        body { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #e0e0e0; font-family: sans-serif; }
-        .calculator { background-color: #5a8e7a; padding: 20px; border-radius: 10px; display: flex; gap: 10px; }
-        .display { background: white; width: 150px; height: 300px; border: 2px solid #333; }
-        .grid { display: grid; grid-template-columns: repeat(3, 60px); gap: 10px; }
-        button { height: 50px; cursor: pointer; font-size: 18px; border-radius: 5px; border: none; background: #ccc; }
-        .op { background: #999; }
-        .equal { background: #777; color: white; }
-    </style>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>電卓</title>
+
+<style>
+
+body{
+font-family:sans-serif;
+background:#f3f3f3;
+margin:0;
+padding:10px;
+}
+
+
+.mode{
+display:flex;
+gap:10px;
+margin-bottom:10px;
+}
+
+
+.mode button{
+font-size:20px;
+}
+
+
+.main{
+display:flex;
+gap:8px;
+height:85vh;
+}
+
+
+.columns{
+display:flex;
+gap:4px;
+flex:0 0 68%;
+}
+
+
+.column{
+background:white;
+flex:1;
+border-radius:10px;
+padding:5px;
+}
+
+
+h3{
+text-align:center;
+margin:5px;
+}
+
+
+.row{
+height:45px;
+border-bottom:1px solid #ccc;
+font-size:28px;
+overflow:hidden;
+}
+
+
+.row.active{
+background:#ddd;
+}
+
+
+.total{
+font-size:28px;
+font-weight:bold;
+text-align:center;
+margin:8px;
+}
+
+
+button{
+font-size:26px;
+border-radius:10px;
+border:none;
+background:white;
+width:100%;
+}
+
+
+.keypad{
+flex:1;
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:8px;
+}
+
+</style>
+
 </head>
+
+
 <body>
 
-<div class="calculator">
-    <div class="display" id="screen"></div>
-    <div class="grid">
-        <button onclick="clearAll()" style="grid-column: span 3;">AC</button>
-        <button>7</button><button>8</button><button>9</button>
-        <button>4</button><button>5</button><button>6</button>
-        <button>1</button><button>2</button><button>3</button>
-        <button>0</button><button>00</button><button class="op">-</button>
-        <button class="op">÷</button><button class="op">×</button><button class="op">+</button>
-        <button class="equal" style="grid-column: span 3;" onclick="calculate()">=</button>
-    </div>
+
+<div class="mode">
+
+<button onclick="mode='single'">
+個別
+</button>
+
+<button onclick="mode='all'">
+一括
+</button>
+
 </div>
 
+
+
+
+<div class="main">
+
+
+<div class="columns">
+
+
+<div class="column">
+
+<h3>A</h3>
+
+<div id="col0"></div>
+
+<div class="total" id="total0">0</div>
+
+<button onclick="clearCol(0)">C</button>
+
+</div>
+
+
+
+
+<div class="column">
+
+<h3>B</h3>
+
+<div id="col1"></div>
+
+<div class="total" id="total1">0</div>
+
+<button onclick="clearCol(1)">C</button>
+
+</div>
+
+
+
+
+<div class="column">
+
+<h3>C</h3>
+
+<div id="col2"></div>
+
+<div class="total" id="total2">0</div>
+
+<button onclick="clearCol(2)">C</button>
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="keypad">
+
+
+<button onclick="input('7')">7</button>
+<button onclick="input('8')">8</button>
+<button onclick="input('9')">9</button>
+
+
+<button onclick="input('4')">4</button>
+<button onclick="input('5')">5</button>
+<button onclick="input('6')">6</button>
+
+
+<button onclick="input('1')">1</button>
+<button onclick="input('2')">2</button>
+<button onclick="input('3')">3</button>
+
+
+<button onclick="input('0')">0</button>
+<button onclick="input('00')">00</button>
+<button onclick="calc()">＝</button>
+
+
+<button onclick="input('+')">＋</button>
+<button onclick="input('-')">−</button>
+<button onclick="input('*')">×</button>
+
+
+<button onclick="input('÷')">÷</button>
+
+<button onclick="clearCol(activeCol)">C</button>
+
+<button onclick="clearAll()">3AC</button>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
 <script>
-    const screen = document.getElementById('screen');
-    function clearAll() { screen.innerText = ''; }
-    function calculate() { try { screen.innerText = eval(screen.innerText.replace('×', '*').replace('÷', '/')); } catch { screen.innerText = 'Error'; } }
-    document.querySelectorAll('button').forEach(btn => {
-        if(btn.innerText.match(/[0-9]|[\+\-\*\/]/)) {
-            btn.addEventListener('click', () => screen.innerText += btn.innerText);
-        }
-    });
+
+
+let data=[
+Array(10).fill(""),
+Array(10).fill(""),
+Array(10).fill("")
+];
+
+
+let activeCol=0;
+let activeRow=0;
+
+let mode="single";
+
+
+
+
+
+function formatNumber(value){
+
+if(value==="") return "";
+
+let str=value.toString();
+
+
+if(str.includes("÷")) return str;
+
+
+let minus="";
+
+
+if(str.startsWith("-")){
+
+minus="-";
+str=str.substring(1);
+
+}
+
+
+if(!/^\d+$/.test(str)) return value;
+
+
+return minus + Number(str).toLocaleString();
+
+}
+
+
+
+
+
+
+
+function draw(){
+
+
+for(let c=0;c<3;c++){
+
+
+let html="";
+
+
+for(let r=0;r<10;r++){
+
+
+let val=data[c][r];
+
+
+html+=`
+
+<div class="row ${activeCol==c&&activeRow==r?'active':''}"
+onclick="selectCell(${c},${r})">
+
+
+<span style="color:${String(val).startsWith('-')?'red':'black'}">
+
+${formatNumber(val)}
+
+</span>
+
+
+</div>
+
+`;
+
+}
+
+
+
+document.getElementById("col"+c).innerHTML=html;
+
+
+document.getElementById("total"+c).innerHTML=
+formatNumber(calcColumn(c));
+
+
+}
+
+
+}
+
+
+
+
+
+
+function calcColumn(c){
+
+
+let result=0;
+
+
+for(let r=0;r<10;r++){
+
+
+let v=data[c][r];
+
+
+if(!v) continue;
+
+
+
+try{
+
+
+if(v.startsWith("÷")){
+
+result=result / Number(v.substring(1));
+
+}else{
+
+result+=Function("return "+v)();
+
+}
+
+
+}catch{}
+
+
+}
+
+
+return result;
+
+
+}
+
+
+
+
+
+
+
+function selectCell(c,r){
+
+activeCol=c;
+activeRow=r;
+
+draw();
+
+}
+
+
+
+
+
+
+
+function input(v){
+
+
+if(mode=="all"){
+
+
+for(let c=0;c<3;c++){
+
+data[c][activeRow]+=v;
+
+}
+
+
+}else{
+
+
+data[activeCol][activeRow]+=v;
+
+}
+
+
+draw();
+
+
+}
+
+
+
+
+
+
+
+function calc(){
+
+
+for(let c=0;c<3;c++){
+
+
+for(let r=0;r<10;r++){
+
+
+if(data[c][r] && !data[c][r].startsWith("÷")){
+
+
+try{
+
+
+data[c][r]=
+Function("return "+data[c][r])()
+.toString();
+
+
+}catch{}
+
+
+}
+
+
+}
+
+
+}
+
+
+
+if(activeRow<9){
+
+activeRow++;
+
+}
+
+
+draw();
+
+
+}
+
+
+
+
+
+
+function clearCol(c){
+
+data[c]=Array(10).fill("");
+
+activeRow=0;
+
+draw();
+
+}
+
+
+
+
+
+function clearAll(){
+
+data=[
+Array(10).fill(""),
+Array(10).fill(""),
+Array(10).fill("")
+];
+
+activeRow=0;
+
+draw();
+
+}
+
+
+
+
+draw();
+
+
 </script>
+
+
 </body>
 </html>
