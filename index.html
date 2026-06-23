@@ -4,68 +4,73 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>3連比較電卓</title>
+<title>比較電卓</title>
 
 <style>
 
 body{
-  font-family:sans-serif;
-  background:#f3f3f3;
-  margin:0;
-  padding:10px;
+font-family:sans-serif;
+background:#f3f3f3;
+margin:0;
+padding:10px;
 }
 
-h2{
-  text-align:center;
+h2{text-align:center;}
+
+.main{
+display:flex;
+gap:8px;
 }
 
-.container{
-  display:flex;
-  gap:8px;
+.columns{
+display:flex;
+gap:5px;
+flex:1;
 }
 
 .column{
-  flex:1;
-  background:white;
-  border-radius:12px;
-  padding:8px;
-  min-height:260px;
+background:white;
+flex:1;
+border-radius:10px;
+padding:5px;
 }
 
-.column.active{
-  border:3px solid #333;
+.row{
+height:35px;
+border-bottom:1px solid #ccc;
+font-size:18px;
 }
 
-.title{
-  font-weight:bold;
-  text-align:center;
+.row.active{
+background:#ddd;
 }
 
 .total{
-  font-size:24px;
-  text-align:center;
-  margin:10px;
+font-size:22px;
+font-weight:bold;
+text-align:center;
+margin:8px;
 }
 
-.history{
-  height:120px;
-  overflow:auto;
-  font-size:18px;
-  word-break:break-all;
-}
 
-.buttons{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:5px;
-  margin-top:15px;
+.keypad{
+width:130px;
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:5px;
 }
 
 button{
-  font-size:22px;
-  padding:12px 5px;
-  border-radius:8px;
-  border:none;
+font-size:22px;
+border-radius:8px;
+border:none;
+padding:12px 5px;
+}
+
+
+.mode{
+margin:10px;
+text-align:center;
 }
 
 </style>
@@ -75,155 +80,283 @@ button{
 
 <body>
 
-<h2>3連比較電卓</h2>
+<h2>比較電卓</h2>
 
 
-<div class="container">
+<div class="mode">
 
+<button onclick="mode='single'">
+個別
+</button>
 
-<div class="column active" onclick="selectCol(0)">
-<div class="title">A</div>
-<div class="total" id="total0">0</div>
-<div class="history" id="hist0"></div>
-</div>
-
-
-<div class="column" onclick="selectCol(1)">
-<div class="title">B</div>
-<div class="total" id="total1">0</div>
-<div class="history" id="hist1"></div>
-</div>
-
-
-<div class="column" onclick="selectCol(2)">
-<div class="title">C</div>
-<div class="total" id="total2">0</div>
-<div class="history" id="hist2"></div>
-</div>
-
+<button onclick="mode='all'">
+一括
+</button>
 
 </div>
 
 
-<div class="buttons">
 
-<button onclick="add('7')">7</button>
-<button onclick="add('8')">8</button>
-<button onclick="add('9')">9</button>
-<button onclick="add('+')">＋</button>
+<div class="main">
 
-<button onclick="add('4')">4</button>
-<button onclick="add('5')">5</button>
-<button onclick="add('6')">6</button>
-<button onclick="add('-')">−</button>
 
-<button onclick="add('1')">1</button>
-<button onclick="add('2')">2</button>
-<button onclick="add('3')">3</button>
-<button onclick="add('*')">×</button>
+<div class="columns">
 
-<button onclick="add('0')">0</button>
-<button onclick="add('00')">00</button>
-<button onclick="calc()">＝</button>
-<button onclick="add('/')">÷</button>
 
-<button onclick="clearAll()">C</button>
+<div class="column">
+
+<h3>A</h3>
+
+<div id="col0"></div>
+
+<div class="total" id="total0">
+0
+</div>
+
+<button onclick="clearCol(0)">
+AC
+</button>
 
 </div>
+
+
+
+
+<div class="column">
+
+<h3>B</h3>
+
+<div id="col1"></div>
+
+<div class="total" id="total1">
+0
+</div>
+
+<button onclick="clearCol(1)">
+AC
+</button>
+
+</div>
+
+
+
+
+<div class="column">
+
+<h3>C</h3>
+
+<div id="col2"></div>
+
+<div class="total" id="total2">
+0
+</div>
+
+<button onclick="clearCol(2)">
+AC
+</button>
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="keypad">
+
+<button onclick="input('7')">7</button>
+<button onclick="input('8')">8</button>
+<button onclick="input('9')">9</button>
+
+<button onclick="input('4')">4</button>
+<button onclick="input('5')">5</button>
+<button onclick="input('6')">6</button>
+
+<button onclick="input('1')">1</button>
+<button onclick="input('2')">2</button>
+<button onclick="input('3')">3</button>
+
+<button onclick="input('0')">0</button>
+<button onclick="input('00')">00</button>
+<button onclick="calc()">=</button>
+
+<button onclick="input('+')">+</button>
+<button onclick="input('-')">-</button>
+<button onclick="input('*')">*</button>
+<button onclick="input('/')">/</button>
+
+</div>
+
+
+</div>
+
+
+
 
 
 <script>
 
 
-let active=0;
-
-let exp=[
-"",
-"",
-""
+let data=[
+Array(10).fill(""),
+Array(10).fill(""),
+Array(10).fill("")
 ];
 
 
-function selectCol(n){
+let activeCol=0;
+let activeRow=0;
 
-active=n;
+let mode="single";
 
-document.querySelectorAll(".column")
-.forEach((e,i)=>{
-e.classList.toggle("active",i===n);
-});
+
+
+function draw(){
+
+
+for(let c=0;c<3;c++){
+
+
+let html="";
+
+
+for(let r=0;r<10;r++){
+
+
+html+=`
+
+<div class="row ${activeCol==c&&activeRow==r?'active':''}"
+onclick="selectCell(${c},${r})">
+
+${data[c][r]}
+
+</div>
+
+`;
 
 }
 
 
-function add(x){
+document.getElementById(
+"col"+c
+).innerHTML=html;
 
-exp[active]+=x;
 
-update();
+let sum=0;
+
+
+for(let v of data[c]){
+
+try{
+
+if(v)
+sum+=Function("return "+v)();
+
+}catch{}
 
 }
+
+
+document.getElementById(
+"total"+c
+).innerHTML=sum;
+
+
+}
+
+}
+
+
+
+function selectCell(c,r){
+
+activeCol=c;
+activeRow=r;
+
+draw();
+
+}
+
+
+
+
+function input(v){
+
+
+if(mode=="all"){
+
+for(let c=0;c<3;c++){
+
+data[c][activeRow]+=v;
+
+}
+
+
+}else{
+
+
+data[activeCol][activeRow]+=v;
+
+
+}
+
+
+draw();
+
+}
+
+
+
 
 
 function calc(){
 
-try{
 
-let result=Function(
-"return "+exp[active]
-)();
+for(let c=0;c<3;c++){
 
-exp[active]=result.toString();
+for(let r=0;r<10;r++){
 
-}catch{
-
-alert("計算できません");
-
-}
-
-update();
-
-}
-
-
-
-function clearAll(){
-
-exp[active]="";
-
-update();
-
-}
-
-
-function update(){
-
-for(let i=0;i<3;i++){
-
-document.getElementById(
-"hist"+i
-).innerHTML=exp[i];
-
-
-let value=0;
 
 try{
 
-if(exp[i]){
-value=Function(
-"return "+exp[i]
-)();
+if(data[c][r]){
+
+data[c][r]=
+Function("return "+data[c][r])()
+.toString();
+
 }
+
 
 }catch{}
 
-document.getElementById(
-"total"+i
-).innerHTML=value;
 
 }
 
 }
+
+
+draw();
+
+}
+
+
+
+
+
+function clearCol(c){
+
+data[c]=Array(10).fill("");
+
+draw();
+
+}
+
+
+
+draw();
 
 
 </script>
