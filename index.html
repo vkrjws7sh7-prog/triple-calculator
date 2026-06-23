@@ -19,6 +19,12 @@ h2{
 text-align:center;
 }
 
+.mode{
+text-align:center;
+margin:8px;
+}
+
+
 .main{
 display:flex;
 gap:8px;
@@ -68,33 +74,20 @@ margin:8px;
 }
 
 
-
-.keypad{
-
-flex:1;
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:8px;
-
-}
-
-
 button{
-
 font-size:28px;
 border-radius:10px;
 border:none;
 background:white;
-
+width:100%;
 }
 
 
-
-.mode{
-
-text-align:center;
-margin:8px;
-
+.keypad{
+flex:1;
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:8px;
 }
 
 
@@ -111,22 +104,21 @@ margin:8px;
 
 <div class="mode">
 
-<button onclick="mode='single'">
-個別
-</button>
+<button onclick="mode='single'">個別</button>
 
-<button onclick="mode='all'">
-一括
-</button>
+<button onclick="mode='all'">一括</button>
 
 </div>
+
 
 
 
 <div class="main">
 
 
+
 <div class="columns">
+
 
 
 <div class="column">
@@ -135,13 +127,9 @@ margin:8px;
 
 <div id="col0"></div>
 
-<div class="total" id="total0">
-0
-</div>
+<div class="total" id="total0">0</div>
 
-<button onclick="clearCol(0)">
-AC
-</button>
+<button onclick="clearCol(0)">AC</button>
 
 </div>
 
@@ -154,13 +142,9 @@ AC
 
 <div id="col1"></div>
 
-<div class="total" id="total1">
-0
-</div>
+<div class="total" id="total1">0</div>
 
-<button onclick="clearCol(1)">
-AC
-</button>
+<button onclick="clearCol(1)">AC</button>
 
 </div>
 
@@ -173,18 +157,15 @@ AC
 
 <div id="col2"></div>
 
-<div class="total" id="total2">
-0
-</div>
+<div class="total" id="total2">0</div>
 
-<button onclick="clearCol(2)">
-AC
-</button>
+<button onclick="clearCol(2)">AC</button>
 
 </div>
 
 
 </div>
+
 
 
 
@@ -220,8 +201,11 @@ AC
 
 <button onclick="input('/')">÷</button>
 
+<button onclick="clearAll()">C</button>
+
 
 </div>
+
 
 
 </div>
@@ -247,6 +231,46 @@ let mode="single";
 
 
 
+
+function formatNumber(value){
+
+
+if(value==="") return "";
+
+
+let str=value.toString();
+
+
+let minus="";
+
+
+if(str.startsWith("-")){
+
+minus="-";
+
+str=str.substring(1);
+
+}
+
+
+if(!/^\d+$/.test(str)){
+
+return value;
+
+}
+
+
+return minus + Number(str).toLocaleString();
+
+
+}
+
+
+
+
+
+
+
 function draw(){
 
 
@@ -256,7 +280,11 @@ for(let c=0;c<3;c++){
 let html="";
 
 
+
 for(let r=0;r<10;r++){
+
+
+let val=data[c][r];
 
 
 html+=`
@@ -264,7 +292,11 @@ html+=`
 <div class="row ${activeCol==c&&activeRow==r?'active':''}"
 onclick="selectCell(${c},${r})">
 
-${data[c][r]}
+<span style="color:${String(val).startsWith('-')?'red':'black'}">
+
+${formatNumber(val)}
+
+</span>
 
 </div>
 
@@ -273,7 +305,9 @@ ${data[c][r]}
 }
 
 
+
 document.getElementById("col"+c).innerHTML=html;
+
 
 
 
@@ -285,8 +319,13 @@ for(let v of data[c]){
 
 try{
 
-if(v)
+
+if(v){
+
 sum+=Function("return "+v)();
+
+}
+
 
 }catch{}
 
@@ -294,13 +333,18 @@ sum+=Function("return "+v)();
 }
 
 
-document.getElementById("total"+c).innerHTML=sum;
+
+document.getElementById("total"+c).innerHTML=formatNumber(sum);
+
 
 
 }
 
 
 }
+
+
+
 
 
 
@@ -309,6 +353,7 @@ document.getElementById("total"+c).innerHTML=sum;
 function selectCell(c,r){
 
 activeCol=c;
+
 activeRow=r;
 
 draw();
@@ -319,7 +364,9 @@ draw();
 
 
 
+
 function input(v){
+
 
 
 if(mode=="all"){
@@ -350,6 +397,8 @@ draw();
 
 
 
+
+
 function calc(){
 
 
@@ -357,6 +406,7 @@ for(let c=0;c<3;c++){
 
 
 for(let r=0;r<10;r++){
+
 
 
 try{
@@ -376,9 +426,16 @@ Function("return "+data[c][r])()
 }catch{}
 
 
+}
+
 
 }
 
+
+
+if(activeRow<9){
+
+activeRow++;
 
 }
 
@@ -387,6 +444,9 @@ draw();
 
 
 }
+
+
+
 
 
 
@@ -394,15 +454,44 @@ draw();
 
 function clearCol(c){
 
+
 data[c]=Array(10).fill("");
 
+activeRow=0;
+
 draw();
+
 
 }
 
 
 
+
+
+
+function clearAll(){
+
+
+data=[
+Array(10).fill(""),
+Array(10).fill(""),
+Array(10).fill("")
+];
+
+
+activeRow=0;
+
+
 draw();
+
+
+}
+
+
+
+
+draw();
+
 
 
 </script>
